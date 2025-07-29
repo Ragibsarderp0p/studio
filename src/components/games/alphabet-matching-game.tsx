@@ -17,7 +17,7 @@ const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
 const generateCards = (pairs: number): Card[] => {
   const letters = [...alphabet].sort(() => 0.5 - Math.random()).slice(0, pairs);
-  const cardValues = [...letters, ...letters];
+  const cardValues = [...letters, ...letters.map(l => l.toLowerCase())];
   const shuffled = cardValues.sort(() => Math.random() - 0.5);
   return shuffled.map((value, index) => ({
     id: index,
@@ -48,7 +48,7 @@ export function AlphabetMatchingGame() {
     if (flippedIndices.length === 2) {
       setIsChecking(true);
       const [firstIndex, secondIndex] = flippedIndices;
-      if (cards[firstIndex].value === cards[secondIndex].value) {
+      if (cards[firstIndex].value.toLowerCase() === cards[secondIndex].value.toLowerCase()) {
         setCards(prev =>
           prev.map(card =>
             card.id === firstIndex || card.id === secondIndex
