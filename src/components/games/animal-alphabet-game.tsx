@@ -52,7 +52,7 @@ export function AnimalAlphabetGame({ gameRound }: AnimalAlphabetGameProps) {
     }
   }, []);
 
-  const loadNewWord = useCallback(async (isSkip = false) => {
+  const loadNewWord = useCallback(async (isSkip = false, currentUsedAnimals: string[] = []) => {
     if (isSkip) {
         incrementSkips();
         recordLoss(roundStats);
@@ -62,10 +62,11 @@ export function AnimalAlphabetGame({ gameRound }: AnimalAlphabetGameProps) {
     setUserInput('');
     setLoading(true);
 
-    let availableAnimals = animals.filter(a => !usedAnimals.includes(a));
+    let availableAnimals = animals.filter(a => !currentUsedAnimals.includes(a));
+    let newUsedAnimals = currentUsedAnimals;
     if (availableAnimals.length === 0) {
       availableAnimals = animals;
-      setUsedAnimals([]); 
+      newUsedAnimals = []; 
     }
     
     const animal = availableAnimals[Math.floor(Math.random() * availableAnimals.length)];
@@ -83,19 +84,15 @@ export function AnimalAlphabetGame({ gameRound }: AnimalAlphabetGameProps) {
         });
     }
     setLoading(false);
-    setUsedAnimals(prev => [...prev, animal]);
+    setUsedAnimals([...newUsedAnimals, animal]);
     setTimeout(() => inputRef.current?.focus(), 100);
-  }, [usedAnimals, incrementSkips, toast, startRound, recordLoss, roundStats]);
-
-  const startNewGame = useCallback(() => {
-    setUsedAnimals([]);
-    loadNewWord();
-  }, [loadNewWord]);
+  }, [incrementSkips, toast, startRound, recordLoss, roundStats]);
 
 
   useEffect(() => {
-    startNewGame();
-  }, [startNewGame]);
+    loadNewWord(false, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const displayedWord = useMemo(() => {
     if (!currentAnimal || missingIndex === null) return [];
@@ -118,7 +115,7 @@ export function AnimalAlphabetGame({ gameRound }: AnimalAlphabetGameProps) {
       recordWin(roundStats);
       setTimeout(() => {
         resumeTimer();
-        loadNewWord();
+        loadNewWord(false, usedAnimals);
       }, 1500);
     } else {
       setGameState('wrong');
@@ -131,7 +128,7 @@ export function AnimalAlphabetGame({ gameRound }: AnimalAlphabetGameProps) {
   };
   
   const handleNewWordClick = () => {
-    loadNewWord(true);
+    loadNewWord(true, usedAnimals);
   }
 
   return (
