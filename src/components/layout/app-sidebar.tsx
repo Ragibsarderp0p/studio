@@ -91,6 +91,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
+              size="lg"
               isActive={pathname === '/'}
               onClick={handleLinkClick}
             >
@@ -102,7 +103,7 @@ export function AppSidebar() {
           </SidebarMenuItem>
           {games.map((game) => (
             <SidebarMenuItem key={game.title}>
-              <SidebarMenuButton asChild isActive={pathname === game.href} onClick={handleLinkClick}>
+              <SidebarMenuButton asChild size="lg" isActive={pathname === game.href} onClick={handleLinkClick}>
                 <Link href={game.href}>
                   {game.icon}
                   <span>{game.title}</span>
