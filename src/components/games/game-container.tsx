@@ -1,6 +1,11 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { GameSessionStats } from '@/hooks/use-game-session';
+import { GameStatsDisplay } from './game-stats-display';
+import { useGameSession } from '@/hooks/use-game-session';
 
 type GameContainerProps = {
   title: string;
@@ -9,6 +14,7 @@ type GameContainerProps = {
 };
 
 export function GameContainer({ title, instructions, children }: GameContainerProps) {
+  const { sessionStats } = useGameSession();
   return (
     <div className="container mx-auto px-4 py-8 flex flex-col items-center">
       <div className="w-full max-w-4xl">
@@ -23,6 +29,9 @@ export function GameContainer({ title, instructions, children }: GameContainerPr
             {title}
           </h1>
           <p className="text-lg text-primary/80">{instructions}</p>
+        </div>
+        <div className="my-4">
+            <GameStatsDisplay stats={sessionStats} title="Session Stats" />
         </div>
         <div className="mt-8">
           {children}

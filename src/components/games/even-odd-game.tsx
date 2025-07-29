@@ -15,7 +15,7 @@ const generateNumbers = (count: number) => {
 };
 
 export function EvenOddGame() {
-  const { sessionStats, recordWin, recordLoss } = useGameSession();
+  const { recordWin, recordLoss } = useGameSession();
   const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts } = useGameRound();
   
   const [numbers, setNumbers] = useState<number[]>([]);
@@ -66,7 +66,6 @@ export function EvenOddGame() {
   return (
     <div className="w-full max-w-3xl mx-auto p-4 md:p-8 bg-white/80 rounded-2xl shadow-2xl border-4 border-white">
       <GameStatsDisplay stats={roundStats} title="This Round" />
-      <GameStatsDisplay stats={sessionStats} title="Session Stats" className="mt-2" />
       <div className="text-center my-6 bg-primary/10 p-4 rounded-lg">
         <p className="text-2xl font-semibold text-primary">
           Click on all the <span className="font-extrabold text-accent bg-primary text-primary-foreground px-2 py-1 rounded">{mode.toUpperCase()}</span> numbers!

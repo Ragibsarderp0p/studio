@@ -19,7 +19,7 @@ const shuffleArray = (array: SortableNumber[]) => {
 };
 
 export function NumberSortingGame() {
-  const { sessionStats, recordWin, recordLoss } = useGameSession();
+  const { recordWin, recordLoss } = useGameSession();
   const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts } = useGameRound();
   
   const [items, setItems] = useState<SortableNumber[]>([]);
@@ -106,7 +106,6 @@ export function NumberSortingGame() {
   return (
     <div className="w-full max-w-3xl mx-auto p-4 md:p-8 bg-white/80 rounded-2xl shadow-2xl border-4 border-white relative">
       <GameStatsDisplay stats={roundStats} title="This Round" />
-      <GameStatsDisplay stats={sessionStats} title="Session Stats" className="mt-2" />
       <div className="mb-8 mt-4">
         <h3 className="text-center text-2xl font-semibold text-primary mb-4">Unsorted Numbers</h3>
         <div className="flex justify-center gap-4 flex-wrap bg-blue-100 p-4 rounded-lg min-h-[100px] items-center">

@@ -21,7 +21,7 @@ const animals = [
 ];
 
 export function AnimalAlphabetGame() {
-  const { sessionStats, recordWin, recordLoss } = useGameSession();
+  const { recordWin, recordLoss } = useGameSession();
   const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts, incrementSkips, pauseTimer, resumeTimer } = useGameRound();
   const [currentAnimal, setCurrentAnimal] = useState('');
   const [missingIndex, setMissingIndex] = useState<number | null>(null);
@@ -134,7 +134,6 @@ export function AnimalAlphabetGame() {
     <Card className="w-full max-w-2xl mx-auto p-4 md:p-8 shadow-2xl rounded-2xl border-4 border-white bg-white/80">
       <CardContent>
         <GameStatsDisplay stats={roundStats} title="This Round" />
-        <GameStatsDisplay stats={sessionStats} title="Session Stats" className="mt-2" />
         {loading && (
           <div className="flex justify-center items-center h-48">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />

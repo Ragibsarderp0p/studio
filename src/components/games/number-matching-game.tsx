@@ -29,7 +29,7 @@ const generateCards = (pairs: number): Card[] => {
 };
 
 export function NumberMatchingGame() {
-  const { sessionStats, recordWin } = useGameSession();
+  const { recordWin } = useGameSession();
   const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts } = useGameRound();
   const [cards, setCards] = useState<Card[]>([]);
   const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
@@ -101,7 +101,6 @@ export function NumberMatchingGame() {
   return (
     <div className="w-full max-w-4xl mx-auto p-4 md:p-8 bg-white/80 rounded-2xl shadow-2xl border-4 border-white relative">
       <GameStatsDisplay stats={roundStats} title="This Round" />
-      <GameStatsDisplay stats={sessionStats} title="Session Stats" className="mt-2" />
       <div className="grid grid-cols-4 gap-4 mt-4">
         {cards.map((card, index) => (
           <div key={card.id} className="perspective-[1000px]">
