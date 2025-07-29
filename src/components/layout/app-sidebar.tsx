@@ -29,47 +29,47 @@ const games = [
   {
     title: 'Animal Alphabet',
     href: '/animal-alphabet',
-    icon: <SpellCheck />,
+    icon: <SpellCheck className="w-6 h-6" />,
   },
   {
     title: 'Number Sorting',
     href: '/number-sorting',
-    icon: <ArrowDownUp />,
+    icon: <ArrowDownUp className="w-6 h-6" />,
   },
   {
     title: 'Even or Odd',
     href: '/even-odd',
-    icon: <ListChecks />,
+    icon: <ListChecks className="w-6 h-6" />,
   },
   {
     title: 'Alphabet Matching',
     href: '/alphabet-matching',
-    icon: <Blocks />,
+    icon: <Blocks className="w-6 h-6" />,
   },
   {
     title: 'Number Matching',
     href: '/number-matching',
-    icon: <Hash />,
+    icon: <Hash className="w-6 h-6" />,
   },
   {
     title: 'Word Building',
     href: '/word-building',
-    icon: <Puzzle />,
+    icon: <Puzzle className="w-6 h-6" />,
   },
   {
     title: 'Sight Word Hunt',
     href: '/sight-word-hunt',
-    icon: <Search />,
+    icon: <Search className="w-6 h-6" />,
   },
   {
     title: 'Shape Matching',
     href: '/shape-matching',
-    icon: <Shapes />,
+    icon: <Shapes className="w-6 h-6" />,
   },
   {
     title: 'Color Sorting',
     href: '/color-sorting',
-    icon: <Palette />,
+    icon: <Palette className="w-6 h-6" />,
   },
 ];
 
@@ -96,7 +96,7 @@ export function AppSidebar() {
               onClick={handleLinkClick}
             >
               <Link href="/">
-                <Home />
+                <Home className="w-6 h-6" />
                 <span>Home</span>
               </Link>
             </SidebarMenuButton>
