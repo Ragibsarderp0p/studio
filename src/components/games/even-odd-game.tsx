@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -8,15 +9,19 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CheckCircle, RefreshCw, XCircle } from 'lucide-react';
 import { useGameSession } from '@/hooks/use-game-session';
 import { GameStatsDisplay } from '@/components/games/game-stats-display';
-import { useGameRound } from '@/hooks/use-game-round';
+import type { useGameRound } from '@/hooks/use-game-round';
 
 const generateNumbers = (count: number) => {
   return Array.from({ length: count }, () => Math.floor(Math.random() * 100));
 };
 
-export function EvenOddGame() {
+type EvenOddGameProps = {
+  gameRound: ReturnType<typeof useGameRound>;
+};
+
+export function EvenOddGame({ gameRound }: EvenOddGameProps) {
   const { recordWin, recordLoss } = useGameSession();
-  const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts } = useGameRound();
+  const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts } = gameRound;
   
   const [numbers, setNumbers] = useState<number[]>([]);
   const [mode, setMode] = useState<'even' | 'odd'>('even');
@@ -65,7 +70,6 @@ export function EvenOddGame() {
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4 md:p-8 bg-white/80 rounded-2xl shadow-2xl border-4 border-white">
-      <GameStatsDisplay stats={roundStats} title="This Round" />
       <div className="text-center my-6 bg-primary/10 p-4 rounded-lg">
         <p className="text-2xl font-semibold text-primary">
           Click on all the <span className="font-extrabold text-accent bg-primary text-primary-foreground px-2 py-1 rounded">{mode.toUpperCase()}</span> numbers!

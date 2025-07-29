@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -7,13 +8,17 @@ import { RefreshCw, PartyPopper } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useGameSession } from '@/hooks/use-game-session';
 import { GameStatsDisplay } from '@/components/games/game-stats-display';
-import { useGameRound } from '@/hooks/use-game-round';
+import type { useGameRound } from '@/hooks/use-game-round';
 
 type Card = {
   id: number;
   value: number;
   isFlipped: boolean;
   isMatched: boolean;
+};
+
+type NumberMatchingGameProps = {
+  gameRound: ReturnType<typeof useGameRound>;
 };
 
 const generateCards = (pairs: number): Card[] => {
@@ -28,9 +33,9 @@ const generateCards = (pairs: number): Card[] => {
   }));
 };
 
-export function NumberMatchingGame() {
+export function NumberMatchingGame({ gameRound }: NumberMatchingGameProps) {
   const { recordWin } = useGameSession();
-  const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts } = useGameRound();
+  const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts } = gameRound;
   const [cards, setCards] = useState<Card[]>([]);
   const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
   const [isChecking, setIsChecking] = useState(false);
@@ -100,7 +105,6 @@ export function NumberMatchingGame() {
   
   return (
     <div className="w-full max-w-4xl mx-auto p-4 md:p-8 bg-white/80 rounded-2xl shadow-2xl border-4 border-white relative">
-      <GameStatsDisplay stats={roundStats} title="This Round" />
       <div className="grid grid-cols-4 gap-4 mt-4">
         {cards.map((card, index) => (
           <div key={card.id} className="perspective-[1000px]">

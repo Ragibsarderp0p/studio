@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -7,20 +8,24 @@ import { RefreshCw, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useGameSession } from '@/hooks/use-game-session';
 import { GameStatsDisplay } from '@/components/games/game-stats-display';
-import { useGameRound } from '@/hooks/use-game-round';
+import type { useGameRound } from '@/hooks/use-game-round';
 
 type SortableNumber = {
   id: number;
   value: number;
 };
 
+type NumberSortingGameProps = {
+  gameRound: ReturnType<typeof useGameRound>;
+};
+
 const shuffleArray = (array: SortableNumber[]) => {
   return [...array].sort(() => Math.random() - 0.5);
 };
 
-export function NumberSortingGame() {
+export function NumberSortingGame({ gameRound }: NumberSortingGameProps) {
   const { recordWin, recordLoss } = useGameSession();
-  const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts } = useGameRound();
+  const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts } = gameRound;
   
   const [items, setItems] = useState<SortableNumber[]>([]);
   const [slots, setSlots] = useState<(SortableNumber | null)[]>([]);
@@ -105,7 +110,6 @@ export function NumberSortingGame() {
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4 md:p-8 bg-white/80 rounded-2xl shadow-2xl border-4 border-white relative">
-      <GameStatsDisplay stats={roundStats} title="This Round" />
       <div className="mb-8 mt-4">
         <h3 className="text-center text-2xl font-semibold text-primary mb-4">Unsorted Numbers</h3>
         <div className="flex justify-center gap-4 flex-wrap bg-blue-100 p-4 rounded-lg min-h-[100px] items-center">

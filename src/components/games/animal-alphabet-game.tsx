@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -11,7 +12,7 @@ import { getMissingLetterForAnimal } from '@/app/animal-alphabet/actions';
 import type * as Tone from 'tone';
 import { useGameSession } from '@/hooks/use-game-session';
 import { GameStatsDisplay } from '@/components/games/game-stats-display';
-import { useGameRound } from '@/hooks/use-game-round';
+import type { useGameRound } from '@/hooks/use-game-round';
 
 const animals = [
   'Alligator', 'Bear', 'Cat', 'Dog', 'Elephant', 'Fox', 'Giraffe', 'Hippo',
@@ -20,9 +21,13 @@ const animals = [
   'Yak', 'Zebra'
 ];
 
-export function AnimalAlphabetGame() {
+type AnimalAlphabetGameProps = {
+  gameRound: ReturnType<typeof useGameRound>;
+};
+
+export function AnimalAlphabetGame({ gameRound }: AnimalAlphabetGameProps) {
   const { recordWin, recordLoss } = useGameSession();
-  const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts, incrementSkips, pauseTimer, resumeTimer } = useGameRound();
+  const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts, incrementSkips, pauseTimer, resumeTimer } = gameRound;
   const [currentAnimal, setCurrentAnimal] = useState('');
   const [missingIndex, setMissingIndex] = useState<number | null>(null);
   const [userInput, setUserInput] = useState('');
@@ -133,7 +138,6 @@ export function AnimalAlphabetGame() {
   return (
     <Card className="w-full max-w-2xl mx-auto p-4 md:p-8 shadow-2xl rounded-2xl border-4 border-white bg-white/80">
       <CardContent>
-        <GameStatsDisplay stats={roundStats} title="This Round" />
         {loading && (
           <div className="flex justify-center items-center h-48">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
