@@ -81,18 +81,20 @@ export default function Home() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {games.map((game) => (
-          <Link href={game.href} key={game.href} passHref>
-            <Card className="transform hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer shadow-lg hover:shadow-2xl overflow-hidden rounded-2xl border-4 border-white">
-              <CardHeader className={`p-6 ${game.color}`}>
-                <div className="flex justify-center items-center h-32">
-                  {game.icon}
-                </div>
-              </CardHeader>
-              <CardContent className="p-6 bg-white text-center">
-                <CardTitle className="font-headline text-2xl text-primary">{game.title}</CardTitle>
-                <CardDescription className="mt-2 text-lg">{game.description}</CardDescription>
-              </CardContent>
-            </Card>
+          <Link href={game.href} key={game.href} legacyBehavior>
+            <a className="transform hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer shadow-lg hover:shadow-2xl overflow-hidden rounded-2xl border-4 border-white block">
+              <Card>
+                <CardHeader className={`p-6 ${game.color}`}>
+                  <div className="flex justify-center items-center h-32">
+                    {game.icon}
+                  </div>
+                </CardHeader>
+                <CardContent className="p-6 bg-white text-center">
+                  <CardTitle className="font-headline text-2xl text-primary">{game.title}</CardTitle>
+                  <CardDescription className="mt-2 text-lg">{game.description}</CardDescription>
+                </CardContent>
+              </Card>
+            </a>
           </Link>
         ))}
       </div>
