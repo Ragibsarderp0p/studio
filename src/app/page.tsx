@@ -14,7 +14,12 @@ import {
   Puzzle,
   Search,
   Hash,
+  RefreshCcw,
+  Trophy,
+  Star,
+  XCircle,
 } from 'lucide-react';
+import { SessionStatsSummary } from '@/components/layout/session-stats-summary';
 
 const games = [
   {
@@ -71,7 +76,7 @@ const games = [
 export default function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="text-center mb-12">
+      <div className="text-center mb-8">
         <h1 className="text-5xl md:text-7xl font-headline text-primary-foreground bg-primary inline-block px-8 py-4 rounded-full shadow-lg -rotate-2" style={{textShadow: '3px 3px 0px hsl(var(--accent))'}}>
           EduFun Adventures!
         </h1>
@@ -79,7 +84,10 @@ export default function Home() {
           Choose a game below to start your learning journey.
         </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+
+      <SessionStatsSummary />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
         {games.map((game, index) => (
           <Link href={game.href} key={game.href}>
             <Card className="transform hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer shadow-lg hover:shadow-2xl overflow-hidden rounded-2xl border-4 border-white block group">

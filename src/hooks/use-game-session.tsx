@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import type { GameRoundStats } from './use-game-round';
 
 export type GameSessionStats = {
@@ -20,6 +20,8 @@ type GameSessionContextType = {
 
 const GameSessionContext = createContext<GameSessionContextType | undefined>(undefined);
 
+const SESSION_STATS_KEY = 'edufun_session_stats';
+
 const initialStats: GameSessionStats = {
   points: 0,
   wrongAttempts: 0,
@@ -30,6 +32,29 @@ const initialStats: GameSessionStats = {
 
 export function GameSessionProvider({ children }: { children: ReactNode }) {
   const [sessionStats, setSessionStats] = useState<GameSessionStats>(initialStats);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      const storedStats = localStorage.getItem(SESSION_STATS_KEY);
+      if (storedStats) {
+        setSessionStats(JSON.parse(storedStats));
+      }
+    } catch (error) {
+      console.error("Failed to load session stats from localStorage", error);
+    }
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      try {
+        localStorage.setItem(SESSION_STATS_KEY, JSON.stringify(sessionStats));
+      } catch (error) {
+        console.error("Failed to save session stats to localStorage", error);
+      }
+    }
+  }, [sessionStats, isLoaded]);
 
   const recordWin = useCallback((roundStats: GameRoundStats) => {
     setSessionStats(prev => ({
