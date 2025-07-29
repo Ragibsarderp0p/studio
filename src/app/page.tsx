@@ -106,8 +106,8 @@ export default function Home() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
         {games.map((game) => (
-          <Link href={game.href} key={game.title}>
-            <Card className="transform hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer shadow-lg hover:shadow-2xl overflow-hidden rounded-2xl border-4 border-white block group">
+          <Link href={game.href} key={game.title} className="block group">
+            <Card className="transform hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer shadow-lg hover:shadow-2xl overflow-hidden rounded-2xl border-4 border-white h-full">
                 <CardHeader className={`p-6 ${game.color} transition-colors duration-300 group-hover:bg-accent`}>
                   <div className="flex justify-center items-center h-32">
                     <div className="transform transition-transform duration-300 group-hover:rotate-12 group-hover:scale-125">
