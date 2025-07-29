@@ -21,13 +21,12 @@ export function EvenOddGame() {
   const [gameState, setGameState] = useState<'playing' | 'correct' | 'wrong'>('playing');
 
   const startNewGame = useCallback(() => {
-    resetStats();
     startGame();
     setGameState('playing');
     setNumbers(generateNumbers(12));
     setMode(Math.random() > 0.5 ? 'even' : 'odd');
     setSelected([]);
-  }, [resetStats, startGame]);
+  }, [startGame]);
 
   useEffect(() => {
     startNewGame();
@@ -54,6 +53,11 @@ export function EvenOddGame() {
       incrementWrongAttempts();
     }
   };
+
+  const handleReset = () => {
+    resetStats();
+    startNewGame();
+  }
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4 md:p-8 bg-white/80 rounded-2xl shadow-2xl border-4 border-white">
@@ -89,7 +93,7 @@ export function EvenOddGame() {
         <Button onClick={checkAnswers} disabled={gameState !== 'playing'} size="lg" className="text-xl">
           Check My Answers
         </Button>
-        <Button onClick={startNewGame} variant="outline" size="lg" className="text-xl">
+        <Button onClick={handleReset} variant="outline" size="lg" className="text-xl">
           <RefreshCw className="mr-2 h-5 w-5" />
           New Game
         </Button>

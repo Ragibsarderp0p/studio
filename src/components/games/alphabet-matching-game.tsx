@@ -38,12 +38,11 @@ export function AlphabetMatchingGame() {
   const isGameWon = useMemo(() => cards.length > 0 && cards.every(c => c.isMatched), [cards]);
 
   const startNewGame = useCallback(() => {
-    resetStats();
     startGame();
     setCards(generateCards(8));
     setFlippedIndices([]);
     setIsChecking(false);
-  }, [resetStats, startGame]);
+  }, [startGame]);
 
   useEffect(() => {
     startNewGame();
@@ -97,6 +96,11 @@ export function AlphabetMatchingGame() {
     );
     setFlippedIndices(prev => [...prev, index]);
   };
+  
+  const handleReset = () => {
+    resetStats();
+    startNewGame();
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4 md:p-8 bg-white/80 rounded-2xl shadow-2xl border-4 border-white relative">
@@ -126,7 +130,7 @@ export function AlphabetMatchingGame() {
         ))}
       </div>
       <div className="text-center mt-8">
-        <Button onClick={startNewGame} size="lg" className="text-xl">
+        <Button onClick={handleReset} size="lg" className="text-xl">
           <RefreshCw className="mr-2 h-5 w-5" />
           Reset Game
         </Button>

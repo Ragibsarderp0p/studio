@@ -26,7 +26,6 @@ export function NumberSortingGame() {
   const sortedValues = useMemo(() => items.map(i => i.value).sort((a, b) => a - b), [items]);
 
   const generateNewGame = useCallback(() => {
-    resetStats();
     startGame();
     setIsComplete(false);
     const newNumbers = Array.from({ length: 5 }, (_, i) => ({
@@ -35,7 +34,7 @@ export function NumberSortingGame() {
     }));
     setItems(shuffleArray(newNumbers));
     setSlots(new Array(5).fill(null));
-  }, [resetStats, startGame]);
+  }, [startGame]);
 
   useEffect(() => {
     generateNewGame();
@@ -89,6 +88,11 @@ export function NumberSortingGame() {
         setItems(prev => [...prev, item].sort(() => Math.random() - 0.5));
     }
   };
+  
+  const handleReset = () => {
+    resetStats();
+    generateNewGame();
+  }
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4 md:p-8 bg-white/80 rounded-2xl shadow-2xl border-4 border-white relative">
@@ -138,7 +142,7 @@ export function NumberSortingGame() {
       </div>
       
       <div className="text-center mt-8">
-        <Button onClick={generateNewGame} size="lg" className="text-xl">
+        <Button onClick={handleReset} size="lg" className="text-xl">
           <RefreshCw className="mr-2 h-5 w-5" />
           New Game
         </Button>

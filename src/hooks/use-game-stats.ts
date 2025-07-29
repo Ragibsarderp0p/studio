@@ -20,6 +20,7 @@ export function useGameStats() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const startGame = useCallback(() => {
+    setStats(prev => ({...prev, time: 0}));
     setIsActive(true);
   }, []);
 
