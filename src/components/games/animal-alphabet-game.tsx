@@ -88,10 +88,9 @@ export function AnimalAlphabetGame({ gameRound }: AnimalAlphabetGameProps) {
   }, [usedAnimals, incrementSkips, toast, startRound, recordLoss, roundStats]);
 
   const startNewGame = useCallback(() => {
-    startRound();
     setUsedAnimals([]);
     loadNewWord();
-  }, [startRound, loadNewWord]);
+  }, [loadNewWord]);
 
 
   useEffect(() => {
