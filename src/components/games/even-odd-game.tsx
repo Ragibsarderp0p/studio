@@ -6,27 +6,30 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CheckCircle, RefreshCw, XCircle } from 'lucide-react';
-import { useGameStats } from '@/hooks/use-game-stats';
+import { useGameSession } from '@/hooks/use-game-session';
 import { GameStatsDisplay } from '@/components/games/game-stats-display';
+import { useGameRound } from '@/hooks/use-game-round';
 
 const generateNumbers = (count: number) => {
   return Array.from({ length: count }, () => Math.floor(Math.random() * 100));
 };
 
 export function EvenOddGame() {
-  const { stats, startGame, endGame, addPoints, incrementWrongAttempts, resetStats } = useGameStats();
+  const { sessionStats, recordWin, recordLoss } = useGameSession();
+  const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts } = useGameRound();
+  
   const [numbers, setNumbers] = useState<number[]>([]);
   const [mode, setMode] = useState<'even' | 'odd'>('even');
   const [selected, setSelected] = useState<number[]>([]);
   const [gameState, setGameState] = useState<'playing' | 'correct' | 'wrong'>('playing');
 
   const startNewGame = useCallback(() => {
-    startGame();
+    startRound();
     setGameState('playing');
     setNumbers(generateNumbers(12));
     setMode(Math.random() > 0.5 ? 'even' : 'odd');
     setSelected([]);
-  }, [startGame]);
+  }, [startRound]);
 
   useEffect(() => {
     startNewGame();
@@ -44,24 +47,26 @@ export function EvenOddGame() {
     
     const isCorrect = selected.length === correctIndices.length && selected.every(index => correctIndices.includes(index));
 
+    endRound();
     if (isCorrect) {
       setGameState('correct');
       addPoints(numbers.length * 5); // 5 points per number
-      endGame();
+      recordWin(roundStats);
     } else {
       setGameState('wrong');
       incrementWrongAttempts();
+      recordLoss(roundStats);
     }
   };
 
   const handleReset = () => {
-    resetStats();
     startNewGame();
   }
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4 md:p-8 bg-white/80 rounded-2xl shadow-2xl border-4 border-white">
-      <GameStatsDisplay {...stats} isFinished={gameState === 'correct'} />
+      <GameStatsDisplay stats={roundStats} title="This Round" />
+      <GameStatsDisplay stats={sessionStats} title="Session Stats" className="mt-2" />
       <div className="text-center my-6 bg-primary/10 p-4 rounded-lg">
         <p className="text-2xl font-semibold text-primary">
           Click on all the <span className="font-extrabold text-accent bg-primary text-primary-foreground px-2 py-1 rounded">{mode.toUpperCase()}</span> numbers!
@@ -105,7 +110,7 @@ export function EvenOddGame() {
             <Alert variant="default" className="bg-green-100 border-green-500 text-green-800">
               <CheckCircle className="h-5 w-5 text-green-600" />
               <AlertTitle className="font-bold">Excellent!</AlertTitle>
-              <AlertDescription>You found all the {mode} numbers! You scored {stats.points} points.</AlertDescription>
+              <AlertDescription>You found all the {mode} numbers! You scored {roundStats.points} points.</AlertDescription>
             </Alert>
           </motion.div>
         )}

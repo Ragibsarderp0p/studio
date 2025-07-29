@@ -2,15 +2,15 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-export type GameStats = {
+export type GameRoundStats = {
   time: number;
   points: number;
   wrongAttempts: number;
   skips: number;
 };
 
-export function useGameStats() {
-  const [stats, setStats] = useState<GameStats>({
+export function useGameRound() {
+  const [stats, setStats] = useState<GameRoundStats>({
     time: 0,
     points: 0,
     wrongAttempts: 0,
@@ -19,13 +19,17 @@ export function useGameStats() {
   const [isActive, setIsActive] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const startGame = useCallback(() => {
-    // Don't reset points, wrongAttempts, or skips
-    setStats(prev => ({...prev, time: 0}));
+  const startRound = useCallback(() => {
+    setStats({
+      time: 0,
+      points: 0,
+      wrongAttempts: 0,
+      skips: 0,
+    });
     setIsActive(true);
   }, []);
 
-  const endGame = useCallback(() => {
+  const endRound = useCallback(() => {
     setIsActive(false);
   }, []);
 
@@ -35,16 +39,6 @@ export function useGameStats() {
 
   const resumeTimer = useCallback(() => {
     setIsActive(true);
-  }, []);
-
-  const resetStats = useCallback(() => {
-    setStats({
-      time: 0,
-      points: 0,
-      wrongAttempts: 0,
-      skips: 0,
-    });
-    setIsActive(false);
   }, []);
 
   const addPoints = useCallback((amount: number) => {
@@ -77,14 +71,13 @@ export function useGameStats() {
   }, [isActive]);
 
   return {
-    stats,
-    startGame,
-    endGame,
+    roundStats: stats,
+    startRound,
+    endRound,
     addPoints,
     incrementWrongAttempts,
     incrementSkips,
-    resetStats,
     pauseTimer,
-    resumeTimer
+    resumeTimer,
   };
 }

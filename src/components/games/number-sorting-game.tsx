@@ -5,8 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useGameStats } from '@/hooks/use-game-stats';
+import { useGameSession } from '@/hooks/use-game-session';
 import { GameStatsDisplay } from '@/components/games/game-stats-display';
+import { useGameRound } from '@/hooks/use-game-round';
 
 type SortableNumber = {
   id: number;
@@ -18,7 +19,9 @@ const shuffleArray = (array: SortableNumber[]) => {
 };
 
 export function NumberSortingGame() {
-  const { stats, startGame, endGame, addPoints, incrementWrongAttempts, resetStats } = useGameStats();
+  const { sessionStats, recordWin, recordLoss } = useGameSession();
+  const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts } = useGameRound();
+  
   const [items, setItems] = useState<SortableNumber[]>([]);
   const [slots, setSlots] = useState<(SortableNumber | null)[]>([]);
   const [isComplete, setIsComplete] = useState(false);
@@ -26,7 +29,7 @@ export function NumberSortingGame() {
   const sortedValues = useMemo(() => items.map(i => i.value).sort((a, b) => a - b), [items]);
 
   const generateNewGame = useCallback(() => {
-    startGame();
+    startRound();
     setIsComplete(false);
     const newNumbers = Array.from({ length: 5 }, (_, i) => ({
       id: i,
@@ -34,25 +37,32 @@ export function NumberSortingGame() {
     }));
     setItems(shuffleArray(newNumbers));
     setSlots(new Array(5).fill(null));
-  }, [startGame]);
+  }, [startRound]);
 
   useEffect(() => {
     generateNewGame();
   }, [generateNewGame]);
 
-  useEffect(() => {
+  const checkCompletion = useCallback(() => {
     if (slots.every(s => s !== null) && items.length === 0) {
       const isCorrect = slots.every((s, i) => s!.value === sortedValues[i]);
+      endRound();
       if (isCorrect) {
         setIsComplete(true);
         addPoints(50);
-        endGame();
+        recordWin(roundStats);
       } else {
         incrementWrongAttempts();
+        recordLoss(roundStats);
         // Maybe provide feedback that the order is wrong
       }
     }
-  }, [slots, sortedValues, items.length, addPoints, endGame, incrementWrongAttempts]);
+  }, [slots, items, sortedValues, endRound, addPoints, incrementWrongAttempts, recordWin, recordLoss, roundStats]);
+
+
+  useEffect(() => {
+    checkCompletion();
+  }, [slots, items, checkCompletion]);
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: SortableNumber) => {
     e.dataTransfer.setData('numberId', item.id.toString());
@@ -90,13 +100,13 @@ export function NumberSortingGame() {
   };
   
   const handleReset = () => {
-    resetStats();
     generateNewGame();
   }
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4 md:p-8 bg-white/80 rounded-2xl shadow-2xl border-4 border-white relative">
-      <GameStatsDisplay {...stats} isFinished={isComplete} />
+      <GameStatsDisplay stats={roundStats} title="This Round" />
+      <GameStatsDisplay stats={sessionStats} title="Session Stats" className="mt-2" />
       <div className="mb-8 mt-4">
         <h3 className="text-center text-2xl font-semibold text-primary mb-4">Unsorted Numbers</h3>
         <div className="flex justify-center gap-4 flex-wrap bg-blue-100 p-4 rounded-lg min-h-[100px] items-center">
@@ -163,7 +173,7 @@ export function NumberSortingGame() {
               <h2 className="text-4xl font-bold text-primary mt-4">Well Done!</h2>
               <p className="text-xl mt-2">You sorted all the numbers correctly!</p>
                <div className="mt-4">
-                <GameStatsDisplay {...stats} isFinished={true}/>
+                <GameStatsDisplay stats={roundStats} isFinished={true} title="Round Stats"/>
               </div>
               <Button onClick={generateNewGame} size="lg" className="mt-6 text-xl">Play Again</Button>
             </div>

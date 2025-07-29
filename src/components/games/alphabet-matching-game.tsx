@@ -5,8 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, PartyPopper } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useGameStats } from '@/hooks/use-game-stats';
+import { useGameSession } from '@/hooks/use-game-session';
 import { GameStatsDisplay } from '@/components/games/game-stats-display';
+import { useGameRound } from '@/hooks/use-game-round';
 
 type Card = {
   id: number;
@@ -30,7 +31,9 @@ const generateCards = (pairs: number): Card[] => {
 };
 
 export function AlphabetMatchingGame() {
-  const { stats, startGame, endGame, addPoints, incrementWrongAttempts, resetStats } = useGameStats();
+  const { sessionStats, recordWin } = useGameSession();
+  const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts } = useGameRound();
+  
   const [cards, setCards] = useState<Card[]>([]);
   const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
   const [isChecking, setIsChecking] = useState(false);
@@ -38,11 +41,11 @@ export function AlphabetMatchingGame() {
   const isGameWon = useMemo(() => cards.length > 0 && cards.every(c => c.isMatched), [cards]);
 
   const startNewGame = useCallback(() => {
-    startGame();
+    startRound();
     setCards(generateCards(8));
     setFlippedIndices([]);
     setIsChecking(false);
-  }, [startGame]);
+  }, [startRound]);
 
   useEffect(() => {
     startNewGame();
@@ -50,9 +53,10 @@ export function AlphabetMatchingGame() {
 
   useEffect(() => {
     if (isGameWon) {
-      endGame();
+      endRound();
+      recordWin(roundStats);
     }
-  }, [isGameWon, endGame]);
+  }, [isGameWon, endRound, recordWin, roundStats]);
 
   useEffect(() => {
     if (flippedIndices.length === 2) {
@@ -97,14 +101,10 @@ export function AlphabetMatchingGame() {
     setFlippedIndices(prev => [...prev, index]);
   };
   
-  const handleReset = () => {
-    resetStats();
-    startNewGame();
-  }
-
   return (
     <div className="w-full max-w-4xl mx-auto p-4 md:p-8 bg-white/80 rounded-2xl shadow-2xl border-4 border-white relative">
-      <GameStatsDisplay {...stats} />
+      <GameStatsDisplay stats={roundStats} title="This Round" />
+      <GameStatsDisplay stats={sessionStats} title="Session Stats" className="mt-2" />
       <div className="grid grid-cols-4 gap-4 mt-4">
         {cards.map((card, index) => (
           <div key={card.id} className="perspective-[1000px]">
@@ -130,7 +130,7 @@ export function AlphabetMatchingGame() {
         ))}
       </div>
       <div className="text-center mt-8">
-        <Button onClick={handleReset} size="lg" className="text-xl">
+        <Button onClick={startNewGame} size="lg" className="text-xl">
           <RefreshCw className="mr-2 h-5 w-5" />
           Reset Game
         </Button>
@@ -149,7 +149,7 @@ export function AlphabetMatchingGame() {
               <h2 className="text-4xl font-bold text-primary mt-4">You Won!</h2>
               <p className="text-xl mt-2">Amazing memory skills!</p>
               <div className="mt-4">
-                <GameStatsDisplay {...stats} isFinished={true}/>
+                <GameStatsDisplay stats={roundStats} isFinished={true} title="Round Stats"/>
               </div>
               <Button onClick={startNewGame} size="lg" className="mt-6 text-xl">Play Again</Button>
             </div>

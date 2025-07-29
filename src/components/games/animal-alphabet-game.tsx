@@ -9,8 +9,9 @@ import { Loader2, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getMissingLetterForAnimal } from '@/app/animal-alphabet/actions';
 import type * as Tone from 'tone';
-import { useGameStats } from '@/hooks/use-game-stats';
+import { useGameSession } from '@/hooks/use-game-session';
 import { GameStatsDisplay } from '@/components/games/game-stats-display';
+import { useGameRound } from '@/hooks/use-game-round';
 
 const animals = [
   'Alligator', 'Bear', 'Cat', 'Dog', 'Elephant', 'Fox', 'Giraffe', 'Hippo',
@@ -20,7 +21,8 @@ const animals = [
 ];
 
 export function AnimalAlphabetGame() {
-  const { stats, startGame, addPoints, incrementWrongAttempts, incrementSkips, resetStats, pauseTimer, resumeTimer } = useGameStats();
+  const { sessionStats, recordWin, recordLoss } = useGameSession();
+  const { roundStats, startRound, endRound, addPoints, incrementWrongAttempts, incrementSkips, pauseTimer, resumeTimer } = useGameRound();
   const [currentAnimal, setCurrentAnimal] = useState('');
   const [missingIndex, setMissingIndex] = useState<number | null>(null);
   const [userInput, setUserInput] = useState('');
@@ -48,7 +50,9 @@ export function AnimalAlphabetGame() {
   const loadNewWord = useCallback(async (isSkip = false) => {
     if (isSkip) {
         incrementSkips();
+        recordLoss(roundStats);
     }
+    startRound();
     setGameState('playing');
     setUserInput('');
     setLoading(true);
@@ -76,14 +80,13 @@ export function AnimalAlphabetGame() {
     setLoading(false);
     setUsedAnimals(prev => [...prev, animal]);
     setTimeout(() => inputRef.current?.focus(), 100);
-  }, [usedAnimals, incrementSkips, toast]);
+  }, [usedAnimals, incrementSkips, toast, startRound, recordLoss, roundStats]);
 
   const startNewGame = useCallback(() => {
-    resetStats();
-    startGame();
+    startRound();
     setUsedAnimals([]);
     loadNewWord();
-  }, [resetStats, startGame, loadNewWord]);
+  }, [startRound, loadNewWord]);
 
 
   useEffect(() => {
@@ -107,6 +110,8 @@ export function AnimalAlphabetGame() {
       addPoints(10);
       playSuccessSound();
       pauseTimer();
+      endRound();
+      recordWin(roundStats);
       setTimeout(() => {
         resumeTimer();
         loadNewWord();
@@ -128,7 +133,8 @@ export function AnimalAlphabetGame() {
   return (
     <Card className="w-full max-w-2xl mx-auto p-4 md:p-8 shadow-2xl rounded-2xl border-4 border-white bg-white/80">
       <CardContent>
-        <GameStatsDisplay {...stats} />
+        <GameStatsDisplay stats={roundStats} title="This Round" />
+        <GameStatsDisplay stats={sessionStats} title="Session Stats" className="mt-2" />
         {loading && (
           <div className="flex justify-center items-center h-48">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />

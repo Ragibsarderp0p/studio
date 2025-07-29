@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/layout/header';
 import { PT_Sans, Luckiest_Guy } from 'next/font/google';
+import { GameSessionProvider } from '@/hooks/use-game-session';
 
 const ptSans = PT_Sans({
   subsets: ['latin'],
@@ -29,10 +30,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${ptSans.variable} ${luckiestGuy.variable} font-body antialiased`}>
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <main className="flex-grow">{children}</main>
-        </div>
+        <GameSessionProvider>
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-grow">{children}</main>
+          </div>
+        </GameSessionProvider>
         <Toaster />
       </body>
     </html>
