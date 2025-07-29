@@ -2,6 +2,8 @@
 
 import { generateMissingLetter } from '@/ai/flows/generate-missing-letter';
 
+// NOTE: This function will not work in a static export. 
+// The game component has been updated to use a fallback.
 export async function getMissingLetterForAnimal(animalName: string) {
   try {
     const result = await generateMissingLetter({ animalName });

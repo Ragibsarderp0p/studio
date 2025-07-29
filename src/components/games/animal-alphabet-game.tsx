@@ -71,21 +71,21 @@ export function AnimalAlphabetGame({ gameRound }: AnimalAlphabetGameProps) {
     const animal = availableAnimals[Math.floor(Math.random() * availableAnimals.length)];
     
     setCurrentAnimal(animal);
-    const result = await getMissingLetterForAnimal(animal);
-
-    if (result.success) {
-        setMissingIndex(result.index);
+    
+    // Since we are in a static site, we cannot call the AI flow.
+    // We will use the fallback logic directly.
+    let index;
+    if (animal.length > 2) {
+        index = Math.floor(Math.random() * (animal.length - 2)) + 1;
     } else {
-        toast({
-            title: 'Oh no!',
-            description: 'Could not generate a word. Please try again.',
-            variant: 'destructive',
-        });
+        index = 1;
     }
+    setMissingIndex(index);
+
     setLoading(false);
     setUsedAnimals(prev => [...prev, animal]);
     setTimeout(() => inputRef.current?.focus(), 100);
-  }, [incrementSkips, startRound, recordLoss, roundStats, usedAnimals, toast]);
+  }, [incrementSkips, startRound, recordLoss, roundStats, usedAnimals]);
 
   useEffect(() => {
     loadNewWord(false);
