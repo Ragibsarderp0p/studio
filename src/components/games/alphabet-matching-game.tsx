@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, PartyPopper } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useGameStats } from '@/hooks/use-game-stats';
+import { GameStatsDisplay } from '@/components/games/game-stats-display';
 
 type Card = {
   id: number;
@@ -28,6 +30,7 @@ const generateCards = (pairs: number): Card[] => {
 };
 
 export function AlphabetMatchingGame() {
+  const { stats, startGame, endGame, addPoints, incrementWrongAttempts, resetStats } = useGameStats();
   const [cards, setCards] = useState<Card[]>([]);
   const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
   const [isChecking, setIsChecking] = useState(false);
@@ -35,14 +38,22 @@ export function AlphabetMatchingGame() {
   const isGameWon = useMemo(() => cards.length > 0 && cards.every(c => c.isMatched), [cards]);
 
   const startNewGame = useCallback(() => {
+    resetStats();
+    startGame();
     setCards(generateCards(8));
     setFlippedIndices([]);
     setIsChecking(false);
-  }, []);
+  }, [resetStats, startGame]);
 
   useEffect(() => {
     startNewGame();
   }, [startNewGame]);
+
+  useEffect(() => {
+    if (isGameWon) {
+      endGame();
+    }
+  }, [isGameWon, endGame]);
 
   useEffect(() => {
     if (flippedIndices.length === 2) {
@@ -56,9 +67,11 @@ export function AlphabetMatchingGame() {
               : card
           )
         );
+        addPoints(10);
         setFlippedIndices([]);
         setIsChecking(false);
       } else {
+        incrementWrongAttempts();
         setTimeout(() => {
           setCards(prev =>
             prev.map(card =>
@@ -72,7 +85,7 @@ export function AlphabetMatchingGame() {
         }, 1000);
       }
     }
-  }, [flippedIndices, cards]);
+  }, [flippedIndices, cards, addPoints, incrementWrongAttempts]);
 
   const handleCardClick = (index: number) => {
     if (isChecking || cards[index].isFlipped || flippedIndices.length === 2) {
@@ -87,7 +100,8 @@ export function AlphabetMatchingGame() {
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4 md:p-8 bg-white/80 rounded-2xl shadow-2xl border-4 border-white relative">
-      <div className="grid grid-cols-4 gap-4">
+      <GameStatsDisplay {...stats} />
+      <div className="grid grid-cols-4 gap-4 mt-4">
         {cards.map((card, index) => (
           <div key={card.id} className="perspective-[1000px]">
             <motion.div
@@ -130,6 +144,9 @@ export function AlphabetMatchingGame() {
               <PartyPopper className="w-24 h-24 text-accent mx-auto" />
               <h2 className="text-4xl font-bold text-primary mt-4">You Won!</h2>
               <p className="text-xl mt-2">Amazing memory skills!</p>
+              <div className="mt-4">
+                <GameStatsDisplay {...stats} isFinished={true}/>
+              </div>
               <Button onClick={startNewGame} size="lg" className="mt-6 text-xl">Play Again</Button>
             </div>
           </motion.div>

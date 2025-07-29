@@ -5,10 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2, Sparkles, Volume2 } from 'lucide-react';
+import { Loader2, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getMissingLetterForAnimal } from '@/app/animal-alphabet/actions';
 import type * as Tone from 'tone';
+import { useGameStats } from '@/hooks/use-game-stats';
+import { GameStatsDisplay } from '@/components/games/game-stats-display';
 
 const animals = [
   'Alligator', 'Bear', 'Cat', 'Dog', 'Elephant', 'Fox', 'Giraffe', 'Hippo',
@@ -18,6 +20,7 @@ const animals = [
 ];
 
 export function AnimalAlphabetGame() {
+  const { stats, startGame, addPoints, incrementWrongAttempts, incrementSkips, resetStats, pauseTimer, resumeTimer } = useGameStats();
   const [currentAnimal, setCurrentAnimal] = useState('');
   const [missingIndex, setMissingIndex] = useState<number | null>(null);
   const [userInput, setUserInput] = useState('');
@@ -31,7 +34,6 @@ export function AnimalAlphabetGame() {
   const synth = useRef<Tone.Synth | null>(null);
 
   useEffect(() => {
-    // Initialize Tone.js synth on the client side
     import('tone').then(Tone => {
       synth.current = new Tone.Synth().toDestination();
     });
@@ -43,47 +45,50 @@ export function AnimalAlphabetGame() {
     }
   }, []);
 
-  const loadNewWord = useCallback(async () => {
+  const loadNewWord = useCallback(async (isSkip = false) => {
+    if (isSkip) {
+        incrementSkips();
+    }
     setGameState('playing');
     setUserInput('');
     setLoading(true);
 
-    setUsedAnimals(prevUsed => {
-        let availableAnimals = animals.filter(a => !prevUsed.includes(a));
-        if (availableAnimals.length === 0) {
-          availableAnimals = animals;
-          return [availableAnimals[0]];
-        }
-        
-        const animal = availableAnimals[Math.floor(Math.random() * availableAnimals.length)];
-        
-        (async () => {
-            setCurrentAnimal(animal);
-            const result = await getMissingLetterForAnimal(animal);
+    let availableAnimals = animals.filter(a => !usedAnimals.includes(a));
+    if (availableAnimals.length === 0) {
+      availableAnimals = animals;
+      setUsedAnimals([]); 
+    }
+    
+    const animal = availableAnimals[Math.floor(Math.random() * availableAnimals.length)];
+    
+    setCurrentAnimal(animal);
+    const result = await getMissingLetterForAnimal(animal);
 
-            if (result.success) {
-                setMissingIndex(result.index);
-            } else {
-                toast({
-                    title: 'Oh no!',
-                    description: 'Could not generate a word. Please try again.',
-                    variant: 'destructive',
-                });
-            }
-            setLoading(false);
-            setTimeout(() => inputRef.current?.focus(), 100);
-        })();
+    if (result.success) {
+        setMissingIndex(result.index);
+    } else {
+        toast({
+            title: 'Oh no!',
+            description: 'Could not generate a word. Please try again.',
+            variant: 'destructive',
+        });
+    }
+    setLoading(false);
+    setUsedAnimals(prev => [...prev, animal]);
+    setTimeout(() => inputRef.current?.focus(), 100);
+  }, [usedAnimals, incrementSkips, toast]);
 
-        if (availableAnimals.length === 1) {
-             return [];
-        }
-        return [...prevUsed, animal];
-    });
-  }, [toast]);
+  const startNewGame = useCallback(() => {
+    resetStats();
+    startGame();
+    setUsedAnimals([]);
+    loadNewWord();
+  }, [resetStats, startGame, loadNewWord]);
+
 
   useEffect(() => {
-    loadNewWord();
-  }, []);
+    startNewGame();
+  }, [startNewGame]);
 
   const displayedWord = useMemo(() => {
     if (!currentAnimal || missingIndex === null) return [];
@@ -99,22 +104,31 @@ export function AnimalAlphabetGame() {
 
     if (userInput.toLowerCase() === currentAnimal[missingIndex].toLowerCase()) {
       setGameState('correct');
+      addPoints(10);
       playSuccessSound();
+      pauseTimer();
       setTimeout(() => {
+        resumeTimer();
         loadNewWord();
       }, 1500);
     } else {
       setGameState('wrong');
+      incrementWrongAttempts();
       setTimeout(() => {
         setGameState('playing');
         setUserInput('');
       }, 1000);
     }
   };
+  
+  const handleNewWordClick = () => {
+    loadNewWord(true);
+  }
 
   return (
     <Card className="w-full max-w-2xl mx-auto p-4 md:p-8 shadow-2xl rounded-2xl border-4 border-white bg-white/80">
       <CardContent>
+        <GameStatsDisplay {...stats} />
         {loading && (
           <div className="flex justify-center items-center h-48">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -128,6 +142,7 @@ export function AnimalAlphabetGame() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
+              className="mt-4"
             >
               <div className="flex justify-center items-end flex-wrap gap-1 md:gap-2 mb-8" aria-label={`Word: ${currentAnimal.replace(/./g, (c, i) => i === missingIndex ? 'blank' : c)}`}>
                 {displayedWord.map((char, i) => (
@@ -161,8 +176,8 @@ export function AnimalAlphabetGame() {
                   <Button type="submit" size="lg" disabled={gameState !== 'playing' || userInput.length !== 1} className="w-40 h-14 text-xl">
                     Check
                   </Button>
-                  <Button type="button" size="lg" variant="outline" onClick={loadNewWord} disabled={loading} className="w-40 h-14 text-xl">
-                    <Sparkles className="mr-2 h-5 w-5" /> New Word
+                  <Button type="button" size="lg" variant="outline" onClick={handleNewWordClick} disabled={loading} className="w-40 h-14 text-xl">
+                    <Sparkles className="mr-2 h-5 w-5" /> Skip
                   </Button>
                 </div>
               </form>
@@ -175,7 +190,7 @@ export function AnimalAlphabetGame() {
                     exit={{ scale: 0.5, opacity: 0 }}
                     className="mt-6 text-center text-3xl font-bold text-green-600"
                   >
-                    Correct! 🎉
+                    Correct! +10 points! 🎉
                   </motion.div>
                 )}
               </AnimatePresence>
