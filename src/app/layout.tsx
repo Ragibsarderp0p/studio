@@ -2,6 +2,19 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/layout/header';
+import { PT_Sans, Luckiest_Guy } from 'next/font/google';
+
+const ptSans = PT_Sans({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-pt-sans',
+});
+
+const luckiestGuy = Luckiest_Guy({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-luckiest-guy',
+});
 
 export const metadata: Metadata = {
   title: 'EduFun Adventures',
@@ -15,12 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
-      </head>
-      <body className="font-body antialiased">
+      <body className={`${ptSans.variable} ${luckiestGuy.variable} font-body antialiased`}>
         <div className="flex flex-col min-h-screen">
           <Header />
           <main className="flex-grow">{children}</main>

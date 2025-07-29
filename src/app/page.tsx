@@ -22,21 +22,21 @@ const games = [
     description: 'Guess the missing letter!',
     href: '/animal-alphabet',
     icon: <SpellCheck className="w-16 h-16 text-primary" />,
-    color: 'bg-blue-100',
+    color: 'bg-green-100',
   },
   {
     title: 'Number Sorting',
     description: 'Drag numbers to the right order.',
     href: '/number-sorting',
     icon: <ArrowDownUp className="w-16 h-16 text-primary" />,
-    color: 'bg-green-100',
+    color: 'bg-yellow-100',
   },
   {
     title: 'Even or Odd',
     description: 'Find the even or odd numbers.',
     href: '/even-odd',
     icon: <ListChecks className="w-16 h-16 text-primary" />,
-    color: 'bg-yellow-100',
+    color: 'bg-blue-100',
   },
   {
     title: 'Alphabet Matching',
@@ -72,29 +72,29 @@ export default function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-6xl font-bold font-headline text-primary-foreground bg-primary inline-block px-6 py-2 rounded-full shadow-lg" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.2)'}}>
-          Welcome to EduFun Adventures!
+        <h1 className="text-5xl md:text-7xl font-headline text-primary-foreground bg-primary inline-block px-8 py-4 rounded-full shadow-lg -rotate-2" style={{textShadow: '3px 3px 0px hsl(var(--accent))'}}>
+          EduFun Adventures!
         </h1>
         <p className="text-xl mt-4 text-primary max-w-2xl mx-auto">
           Choose a game below to start your learning journey.
         </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {games.map((game) => (
-          <Link href={game.href} key={game.href} legacyBehavior>
-            <a className="transform hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer shadow-lg hover:shadow-2xl overflow-hidden rounded-2xl border-4 border-white block">
-              <Card>
-                <CardHeader className={`p-6 ${game.color}`}>
+        {games.map((game, index) => (
+          <Link href={game.href} key={game.href}>
+            <Card className="transform hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer shadow-lg hover:shadow-2xl overflow-hidden rounded-2xl border-4 border-white block group">
+                <CardHeader className={`p-6 ${game.color} transition-colors duration-300 group-hover:bg-accent`}>
                   <div className="flex justify-center items-center h-32">
-                    {game.icon}
+                    <div className="transform transition-transform duration-300 group-hover:rotate-12 group-hover:scale-125">
+                      {game.icon}
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="p-6 bg-white text-center">
                   <CardTitle className="font-headline text-2xl text-primary">{game.title}</CardTitle>
                   <CardDescription className="mt-2 text-lg">{game.description}</CardDescription>
                 </CardContent>
-              </Card>
-            </a>
+            </Card>
           </Link>
         ))}
       </div>
