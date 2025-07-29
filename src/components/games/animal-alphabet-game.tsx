@@ -48,34 +48,42 @@ export function AnimalAlphabetGame() {
     setUserInput('');
     setLoading(true);
 
-    let availableAnimals = animals.filter(a => !usedAnimals.includes(a));
-    if (availableAnimals.length === 0) {
-      availableAnimals = animals;
-      setUsedAnimals([]);
-    }
-    
-    const animal = availableAnimals[Math.floor(Math.random() * availableAnimals.length)];
-    setUsedAnimals(prev => [...prev, animal]);
-    setCurrentAnimal(animal);
+    setUsedAnimals(prevUsed => {
+        let availableAnimals = animals.filter(a => !prevUsed.includes(a));
+        if (availableAnimals.length === 0) {
+          availableAnimals = animals;
+          return [availableAnimals[0]];
+        }
+        
+        const animal = availableAnimals[Math.floor(Math.random() * availableAnimals.length)];
+        
+        (async () => {
+            setCurrentAnimal(animal);
+            const result = await getMissingLetterForAnimal(animal);
 
-    const result = await getMissingLetterForAnimal(animal);
+            if (result.success) {
+                setMissingIndex(result.index);
+            } else {
+                toast({
+                    title: 'Oh no!',
+                    description: 'Could not generate a word. Please try again.',
+                    variant: 'destructive',
+                });
+            }
+            setLoading(false);
+            setTimeout(() => inputRef.current?.focus(), 100);
+        })();
 
-    if (result.success) {
-      setMissingIndex(result.index);
-    } else {
-      toast({
-        title: 'Oh no!',
-        description: 'Could not generate a word. Please try again.',
-        variant: 'destructive',
-      });
-    }
-    setLoading(false);
-    setTimeout(() => inputRef.current?.focus(), 100);
-  }, [toast, usedAnimals]);
+        if (availableAnimals.length === 1) {
+             return [];
+        }
+        return [...prevUsed, animal];
+    });
+  }, [toast]);
 
   useEffect(() => {
     loadNewWord();
-  }, [loadNewWord]);
+  }, []);
 
   const displayedWord = useMemo(() => {
     if (!currentAnimal || missingIndex === null) return [];
