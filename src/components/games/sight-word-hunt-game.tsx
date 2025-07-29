@@ -16,9 +16,6 @@ export function SightWordHuntGame({ gameRound }: SightWordHuntGameProps) {
   
   return (
     <div className="w-full max-w-2xl mx-auto p-4 md:p-8 bg-white/80 rounded-2xl shadow-2xl border-4 border-white text-center">
-      <h2 className="text-2xl font-bold text-primary mb-4">Coming Soon!</h2>
-      <p className="text-lg mb-6">The word hunt is being prepared. Check back soon!</p>
-      
       <div className="bg-primary/10 p-4 rounded-lg mb-6">
         <h3 className="text-xl font-bold text-primary mb-2">Words to Find:</h3>
         <div className="flex justify-center gap-4 flex-wrap">
