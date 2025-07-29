@@ -89,29 +89,25 @@ export function AppSidebar() {
         </SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link href="/" passHref legacyBehavior>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === '/'}
-                onClick={handleLinkClick}
-              >
-                <a>
-                  <Home />
-                  <span>Home</span>
-                </a>
-              </SidebarMenuButton>
-            </Link>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === '/'}
+              onClick={handleLinkClick}
+            >
+              <Link href="/">
+                <Home />
+                <span>Home</span>
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
           {games.map((game) => (
             <SidebarMenuItem key={game.title}>
-              <Link href={game.href} passHref legacyBehavior>
-                <SidebarMenuButton asChild isActive={pathname === game.href} onClick={handleLinkClick}>
-                  <a>
-                    {game.icon}
-                    <span>{game.title}</span>
-                  </a>
-                </SidebarMenuButton>
-              </Link>
+              <SidebarMenuButton asChild isActive={pathname === game.href} onClick={handleLinkClick}>
+                <Link href={game.href}>
+                  {game.icon}
+                  <span>{game.title}</span>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
