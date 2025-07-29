@@ -1,9 +1,11 @@
+
 'use client';
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Lightbulb } from 'lucide-react';
 import Image from 'next/image';
+import type { useGameRound } from '@/hooks/use-game-round';
 
 const words = [
     { word: 'CAT', image: 'https://placehold.co/400x200', hint: 'feline pet' },
@@ -12,7 +14,11 @@ const words = [
     { word: 'BALL', image: 'https://placehold.co/400x200', hint: 'round toy' },
 ];
 
-export function WordBuildingGame() {
+type WordBuildingGameProps = {
+  gameRound: ReturnType<typeof useGameRound>;
+};
+
+export function WordBuildingGame({ gameRound }: WordBuildingGameProps) {
     const [currentWordIndex, setCurrentWordIndex] = useState(0);
     const { word, image } = words[currentWordIndex];
 

@@ -1,11 +1,17 @@
+
 'use client';
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import type { useGameRound } from '@/hooks/use-game-round';
 
 const wordsToFind = ['THE', 'AND', 'YOU', 'WAS', 'FOR'];
 
-export function SightWordHuntGame() {
+type SightWordHuntGameProps = {
+  gameRound: ReturnType<typeof useGameRound>;
+};
+
+export function SightWordHuntGame({ gameRound }: SightWordHuntGameProps) {
     const [foundWords, setFoundWords] = useState<string[]>([]);
   
   return (
