@@ -52,7 +52,7 @@ export function AnimalAlphabetGame({ gameRound }: AnimalAlphabetGameProps) {
     }
   }, []);
 
-  const loadNewWord = useCallback(async (isSkip = false, currentUsedAnimals: string[] = []) => {
+  const loadNewWord = useCallback(async (isSkip = false) => {
     if (isSkip) {
         incrementSkips();
         recordLoss(roundStats);
@@ -62,11 +62,10 @@ export function AnimalAlphabetGame({ gameRound }: AnimalAlphabetGameProps) {
     setUserInput('');
     setLoading(true);
 
-    let availableAnimals = animals.filter(a => !currentUsedAnimals.includes(a));
-    let newUsedAnimals = currentUsedAnimals;
+    let availableAnimals = animals.filter(a => !usedAnimals.includes(a));
     if (availableAnimals.length === 0) {
       availableAnimals = animals;
-      newUsedAnimals = []; 
+      setUsedAnimals([]);
     }
     
     const animal = availableAnimals[Math.floor(Math.random() * availableAnimals.length)];
@@ -84,13 +83,12 @@ export function AnimalAlphabetGame({ gameRound }: AnimalAlphabetGameProps) {
         });
     }
     setLoading(false);
-    setUsedAnimals([...newUsedAnimals, animal]);
+    setUsedAnimals(prev => [...prev, animal]);
     setTimeout(() => inputRef.current?.focus(), 100);
-  }, [incrementSkips, toast, startRound, recordLoss, roundStats]);
-
+  }, [incrementSkips, startRound, recordLoss, roundStats, usedAnimals, toast]);
 
   useEffect(() => {
-    loadNewWord(false, []);
+    loadNewWord(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -115,7 +113,7 @@ export function AnimalAlphabetGame({ gameRound }: AnimalAlphabetGameProps) {
       recordWin(roundStats);
       setTimeout(() => {
         resumeTimer();
-        loadNewWord(false, usedAnimals);
+        loadNewWord(false);
       }, 1500);
     } else {
       setGameState('wrong');
@@ -123,12 +121,13 @@ export function AnimalAlphabetGame({ gameRound }: AnimalAlphabetGameProps) {
       setTimeout(() => {
         setGameState('playing');
         setUserInput('');
+        inputRef.current?.focus();
       }, 1000);
     }
   };
   
   const handleNewWordClick = () => {
-    loadNewWord(true, usedAnimals);
+    loadNewWord(true);
   }
 
   return (
