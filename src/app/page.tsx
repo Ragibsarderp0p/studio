@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import {
   Card,
@@ -18,6 +19,8 @@ import {
   Trophy,
   Star,
   XCircle,
+  Shapes,
+  Palette,
 } from 'lucide-react';
 import { SessionStatsSummary } from '@/components/layout/session-stats-summary';
 
@@ -70,6 +73,20 @@ const games = [
     href: '/sight-word-hunt',
     icon: <Search className="w-16 h-16 text-primary" />,
     color: 'bg-pink-100',
+  },
+  {
+    title: 'Shape Matching',
+    description: 'Match the geometric shapes.',
+    href: '#',
+    icon: <Shapes className="w-16 h-16 text-primary" />,
+    color: 'bg-orange-100',
+  },
+  {
+    title: 'Color Sorting',
+    description: 'Sort objects by their color.',
+    href: '#',
+    icon: <Palette className="w-16 h-16 text-primary" />,
+    color: 'bg-teal-100',
   },
 ];
 
